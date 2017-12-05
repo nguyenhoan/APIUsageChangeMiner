@@ -186,16 +186,18 @@ public class ChangeAnalyzer {
 						changed = e.getMappedMethod().hasOldUse();
 					}
 					if (changed) {
-						File rdir = new File("T:/api-fixes/iterator/" + this.projectName + "/" + r);
+						File rdir = new File("T:/api-fixes/crypto/" + this.projectName + "/" + r);
 						if (!rdir.exists()) rdir.mkdirs();
 						FileIO.writeStringToFile("https://github.com/" + projectName + "/commit/" + r + "\n" + commit.getFullMessage(), rdir.getAbsolutePath() + "/sum.txt");
 						File cdir = new File(rdir, "" + (rdir.list().length));
 						if (!cdir.exists()) cdir.mkdir();
-						FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/good.java");
-						FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/bad.java");
+						FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/method-good.java");
+						FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/method-bad.java");
+						FileIO.writeStringToFile(e.getCFile().getSourceCode(), cdir.getAbsolutePath() + "/file-good.java");
+						FileIO.writeStringToFile(e.getMappedMethod().getCFile().getSourceCode(), cdir.getAbsolutePath() + "/file-bad.java");
 						StringBuilder sb = new StringBuilder();
 						sb.append(e.getMappedMethod().getCFile().getPath() + " --> " + e.getCFile().getPath() + "\n");
-						sb.append(e.getMappedMethod().getFullName() + " --> " + e.getFullName() + "\n");
+						sb.append(e.getMappedMethod().getOuterClassesNames() + " " + e.getMappedMethod().getFullName() + " --> " + e.getOuterClassesNames() + " " + e.getFullName() + "\n");
 						FileIO.writeStringToFile(sb.toString(), cdir.getAbsolutePath() + "/sum.txt");
 					}
 					e.cleanForStats();

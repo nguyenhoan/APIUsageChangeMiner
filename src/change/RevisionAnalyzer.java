@@ -207,7 +207,8 @@ public class RevisionAnalyzer {
 						try {
 							ldr = repository.open(diff.getOldId().toObjectId(), Constants.OBJ_BLOB);
 							oldContent = new String(ldr.getCachedBytes());
-							if (!oldContent.contains("import java.util.Iterator;"))
+							// TODO
+							if (!oldContent.contains("javax.crypto."))
 								continue;
 						} catch (IOException e) {
 							System.err.println(e.getMessage());
@@ -216,7 +217,8 @@ public class RevisionAnalyzer {
 						try {
 							ldr = repository.open(diff.getNewId().toObjectId(), Constants.OBJ_BLOB);
 							newContent = new String(ldr.getCachedBytes());
-							if (!newContent.contains("import java.util.Iterator;"))
+							// TODO
+							if (!newContent.contains("javax.crypto."))
 								continue;
 						} catch (IOException e) {
 							System.err.println(e.getMessage());

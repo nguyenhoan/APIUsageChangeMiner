@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -37,6 +38,40 @@ public class CMethod extends ChangeEntity {
 	private static final double thresholdBodySimilarity = 0.75;
 	private static final double thresholdDiffability = 0.5;
 	public static final int MAX_NUM_STATEMENTS = 1000;
+	private static final Set<String> APIS = new HashSet<>();
+	
+	static {
+		APIS.add("DHKey");
+		APIS.add("DHPrivateKey");
+		APIS.add("DHPublicKey");
+		APIS.add("PBEKey");
+		APIS.add("Cipher");
+		APIS.add("CipherInputStream");
+		APIS.add("CipherOutputStream");
+		APIS.add("CipherSpi");
+		APIS.add("CryptoAllPermission");
+		APIS.add("CryptoPermission");
+		APIS.add("CryptoPermissions");
+		APIS.add("CryptoPolicyParser");
+		APIS.add("EncryptedPrivateKeyInfo");
+		APIS.add("ExemptionMechanism");
+		APIS.add("ExemptionMechanismSpi");
+		APIS.add("JarVerifier");
+		APIS.add("JceSecurity");
+		APIS.add("JceSecurityManager");
+		APIS.add("KeyAgreement");
+		APIS.add("KeyAgreementSpi");
+		APIS.add("KeyGenerator");
+		APIS.add("KeyGeneratorSpi");
+		APIS.add("Mac");
+		APIS.add("MacSpi");
+		APIS.add("NullCipher");
+		APIS.add("NullCipherSpi");
+		APIS.add("SealedObject");
+		APIS.add("SecretKey");
+		APIS.add("SecretKeyFactory");
+		APIS.add("SecretKeyFactorySpi");
+	}
 	
 	private CClass cClass;
 	private int modifiers;
@@ -133,8 +168,21 @@ public class CMethod extends ChangeEntity {
 		return simpleName + parameterTypes;
 	}
 
-	private String getFullQualName() {
+	public String getFullQualName() {
 		return this.cClass.getFullQualName() + "." + getFullName();
+	}
+
+	public String getOuterClassesNames() {
+		String name = "";
+		CClass cl = this.cClass;
+		while (cl != null) {
+			if (name.isEmpty())
+				name = cl.getSimpleName();
+			else
+				name = cl.getSimpleName() + "." + name;
+			cl = cl.getOutterClass();
+		}
+		return name;
 	}
 
 	public MethodDeclaration getDeclaration() {
@@ -541,7 +589,8 @@ public class CMethod extends ChangeEntity {
 					if (status > TreeMappingConstants.STATUS_FULLY_CHANGED) {
 						if (node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE) != null) {
 							String s = (String) node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE);
-							if (s.equals("Iterator")) {
+							// TODO
+							if (APIS.contains(s)) {
 								changed = true;
 								return false;
 							}
@@ -558,23 +607,24 @@ public class CMethod extends ChangeEntity {
 
 	public boolean hasOldUse() {
 		class RelatedChangeVisitor extends ASTVisitor {
-			private boolean unchanged = false;
+			private boolean changed = false;
 			
-			boolean isUnchanged() {
-				return unchanged;
+			boolean isChanged() {
+				return changed;
 			}
 			
 			@Override
 			public boolean preVisit2(ASTNode node) {
-				if (unchanged)
+				if (changed)
 					return false;
 				if (node.getProperty(TreeMappingConstants.propertyStatus) != null) {
 					int status = (int) node.getProperty(TreeMappingConstants.propertyStatus);
 					if (status <= TreeMappingConstants.STATUS_FULLY_CHANGED) {
 						if (node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE) != null) {
 							String s = (String) node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE);
-							if (s.equals("Iterator")) {
-								unchanged = true;
+							// TODO
+							if (APIS.contains(s)) {
+								changed = true;
 								return false;
 							}
 						}
@@ -585,7 +635,7 @@ public class CMethod extends ChangeEntity {
 		}
 		RelatedChangeVisitor v = new RelatedChangeVisitor();
 		declaration.accept(v);
-		return v.isUnchanged();
+		return v.isChanged();
 	}
 	
 }
