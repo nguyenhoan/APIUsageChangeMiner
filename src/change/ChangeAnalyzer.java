@@ -159,19 +159,6 @@ public class ChangeAnalyzer {
 		for (RevCommit commit : commits) {
 			this.numOfRevisions++;
 			String r = commit.getName();
-			try {
-				String message = commit.getFullMessage().toLowerCase();
-				if (!message.contains("bug")
-						&& !message.contains("fix")
-						&& !message.contains("issue")
-						&& !message.contains("error")
-						&& !message.contains("problem")
-						&& !message.contains("exception")
-						&& !message.contains("fail"))
-					continue;
-			} catch (Throwable t) { 
-				continue;
-			}
 			//System.out.println("Analyzing revision: " + this.numOfRevisions + " " + r);
 			RevisionAnalyzer ra = new RevisionAnalyzer(this, commit);
 			boolean analyzed = ra.analyzeGit();
@@ -180,24 +167,18 @@ public class ChangeAnalyzer {
 				for (CMethod e : methods) {
 					//System.out.println("Method: " + e.getQualName() + " - " + e.getMappedEntity().getQualName());
 					e.buildDependencies();
-					boolean changed = e.hasNewUse();
-					if (changed) {
-						e.getMappedMethod().buildDependencies();
-						changed = e.getMappedMethod().hasOldUse();
-					}
-					if (changed) {
-						File rdir = new File("T:/api-fixes/iterator/" + this.projectName + "/" + r);
-						if (!rdir.exists()) rdir.mkdirs();
-						FileIO.writeStringToFile("https://github.com/" + projectName + "/commit/" + r + "\n" + commit.getFullMessage(), rdir.getAbsolutePath() + "/sum.txt");
-						File cdir = new File(rdir, "" + (rdir.list().length));
-						if (!cdir.exists()) cdir.mkdir();
-						FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/good.java");
-						FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/bad.java");
-						StringBuilder sb = new StringBuilder();
-						sb.append(e.getMappedMethod().getCFile().getPath() + " --> " + e.getCFile().getPath() + "\n");
-						sb.append(e.getMappedMethod().getFullName() + " --> " + e.getFullName() + "\n");
-						FileIO.writeStringToFile(sb.toString(), cdir.getAbsolutePath() + "/sum.txt");
-					}
+					e.getMappedMethod().buildDependencies();
+					File rdir = new File("T:/api-fixes/iterator/" + this.projectName + "/" + r);
+					if (!rdir.exists()) rdir.mkdirs();
+					FileIO.writeStringToFile("https://github.com/" + projectName + "/commit/" + r + "\n" + commit.getFullMessage(), rdir.getAbsolutePath() + "/sum.txt");
+					File cdir = new File(rdir, "" + (rdir.list().length));
+					if (!cdir.exists()) cdir.mkdir();
+					FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/good.java");
+					FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/bad.java");
+					StringBuilder sb = new StringBuilder();
+					sb.append(e.getMappedMethod().getCFile().getPath() + " --> " + e.getCFile().getPath() + "\n");
+					sb.append(e.getMappedMethod().getFullName() + " --> " + e.getFullName() + "\n");
+					FileIO.writeStringToFile(sb.toString(), cdir.getAbsolutePath() + "/sum.txt");
 					e.cleanForStats();
 				}
 			}
@@ -229,24 +210,18 @@ public class ChangeAnalyzer {
 						for (CMethod e : methods) {
 							//System.out.println("Method: " + e.getQualName() + " - " + e.getMappedEntity().getQualName());
 							e.buildDependencies();
-							boolean changed = e.hasNewUse();
-							if (!changed) {
-								e.getMappedMethod().buildDependencies();
-								changed = e.getMappedMethod().hasOldUse();
-							}
-							if (changed) {
-								File rdir = new File("F:/crypto-fixes-svn/" + this.projectName + "/" + r);
-								if (!rdir.exists()) rdir.mkdirs();
-								FileIO.writeStringToFile(logEntry.getMessage(), rdir.getAbsolutePath() + "/sum.txt");
-								File cdir = new File(rdir, "" + (rdir.list().length));
-								if (!cdir.exists()) cdir.mkdir();
-								FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/new.java");
-								FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/old.java");
-								StringBuilder sb = new StringBuilder();
-								sb.append(e.getMappedMethod().getCFile().getPath() + " --> " + e.getCFile().getPath() + "\n");
-								sb.append(e.getMappedMethod().getFullName() + " --> " + e.getFullName() + "\n");
-								FileIO.writeStringToFile(sb.toString(), cdir.getAbsolutePath() + "/sum.txt");
-							}
+							e.getMappedMethod().buildDependencies();
+							File rdir = new File("F:/crypto-fixes-svn/" + this.projectName + "/" + r);
+							if (!rdir.exists()) rdir.mkdirs();
+							FileIO.writeStringToFile(logEntry.getMessage(), rdir.getAbsolutePath() + "/sum.txt");
+							File cdir = new File(rdir, "" + (rdir.list().length));
+							if (!cdir.exists()) cdir.mkdir();
+							FileIO.writeStringToFile(e.getDeclaration().toString(), cdir.getAbsolutePath() + "/new.java");
+							FileIO.writeStringToFile(e.getMappedMethod().getDeclaration().toString(), cdir.getAbsolutePath() + "/old.java");
+							StringBuilder sb = new StringBuilder();
+							sb.append(e.getMappedMethod().getCFile().getPath() + " --> " + e.getCFile().getPath() + "\n");
+							sb.append(e.getMappedMethod().getFullName() + " --> " + e.getFullName() + "\n");
+							FileIO.writeStringToFile(sb.toString(), cdir.getAbsolutePath() + "/sum.txt");
 							e.cleanForStats();
 						}
 					}
