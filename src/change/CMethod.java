@@ -589,7 +589,6 @@ public class CMethod extends ChangeEntity {
 					if (status > TreeMappingConstants.STATUS_FULLY_CHANGED) {
 						if (node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE) != null) {
 							String s = (String) node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE);
-							// TODO
 							if (APIS.contains(s)) {
 								changed = true;
 								return false;
@@ -622,7 +621,6 @@ public class CMethod extends ChangeEntity {
 					if (status <= TreeMappingConstants.STATUS_FULLY_CHANGED) {
 						if (node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE) != null) {
 							String s = (String) node.getProperty(DependencyVisitor.PROPERTY_OBJ_TYPE);
-							// TODO
 							if (APIS.contains(s)) {
 								changed = true;
 								return false;

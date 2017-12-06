@@ -207,8 +207,8 @@ public class RevisionAnalyzer {
 						try {
 							ldr = repository.open(diff.getOldId().toObjectId(), Constants.OBJ_BLOB);
 							oldContent = new String(ldr.getCachedBytes());
-							// TODO
-							if (!oldContent.contains("javax.crypto."))
+							// TODO filter file importing APIs
+							if (!oldContent.contains("javax.servlet.http."))
 								continue;
 						} catch (IOException e) {
 							System.err.println(e.getMessage());
@@ -217,8 +217,8 @@ public class RevisionAnalyzer {
 						try {
 							ldr = repository.open(diff.getNewId().toObjectId(), Constants.OBJ_BLOB);
 							newContent = new String(ldr.getCachedBytes());
-							// TODO
-							if (!newContent.contains("javax.crypto."))
+							// TODO filter file importing APIs
+							if (!newContent.contains("javax.servlet.http."))
 								continue;
 						} catch (IOException e) {
 							System.err.println(e.getMessage());

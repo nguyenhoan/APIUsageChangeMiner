@@ -186,7 +186,8 @@ public class ChangeAnalyzer {
 						changed = e.getMappedMethod().hasOldUse();
 					}
 					if (changed) {
-						File rdir = new File("T:/api-fixes/crypto/" + this.projectName + "/" + r);
+						// TODO api fixes output folder
+						File rdir = new File("T:/api-fixes/http/" + this.projectName + "/" + r);
 						if (!rdir.exists()) rdir.mkdirs();
 						FileIO.writeStringToFile("https://github.com/" + projectName + "/commit/" + r + "\n" + commit.getFullMessage(), rdir.getAbsolutePath() + "/sum.txt");
 						File cdir = new File(rdir, "" + (rdir.list().length));
